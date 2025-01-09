@@ -30,6 +30,7 @@ a {
   text-decoration: none;
   border: 0;
 }
+
 .title h1 {
   font-size: 2rem;
   margin: 19.92px 0 19.92px 0;
@@ -172,22 +173,35 @@ figure {
   margin-inline-end: 0em;
 }
 
-figcaption > p {
+figcaption>p {
   margin-block-start: 0px;
   text-align: center;
   font-style: italic;
   color: #ccc;
 }
 
+/* CSS for header profile picture */
 #selfie {
-  width: 150px; /* Adjust size as needed */
-  height: auto; /* Maintain aspect ratio */
-  border-radius: 50%; /* Optional: Makes the image circular */
+  width: 150px;
+  /* Adjust size as needed */
+  height: auto;
+  /* Maintain aspect ratio */
+  border-radius: 50%;
+  /* Optional: Makes the image circular */
   border: 2px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: inline-block; /* Ensures the image aligns with other elements */
-  vertical-align: middle; /* Aligns the image with text vertically */
-  margin: 0 20px 0 0; /* Adds spacing to the right */
+  display: inline-block;
+  /* Ensures the image aligns with other elements */
+  vertical-align: middle;
+  /* Aligns the image with text vertically */
+  margin: 0 20px 0 0;
+  /* Adds spacing to the right */
+}
+
+@media (max-width: 768px) {
+  #selfie {
+    width: 100px;
+  }
 }
 
 /* Light mode overrides */
@@ -243,7 +257,7 @@ figcaption > p {
     color: #1d1f27;
   }
 
-  figcaption > p {
+  figcaption>p {
     color: #555;
   }
 
