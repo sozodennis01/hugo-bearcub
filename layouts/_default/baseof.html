@@ -11,26 +11,35 @@
   {{- partial "seo_tags.html" . -}}
   <meta name="referrer" content="no-referrer-when-downgrade" />
 
-  
+
   {{ $style := print (default "original" .Site.Params.themeStyle) ".css" | resources.Get | minify }}
   <link href="{{ $style.RelPermalink }}" rel="stylesheet">
 
   {{ if (.Page.Store.Get "hasCodeBlock") }}
-    {{ $syntax := resources.Get "syntax.css" | minify }}
-    <link href="{{ $syntax.RelPermalink }}" rel="stylesheet">
+  {{ $syntax := resources.Get "syntax.css" | minify }}
+  <link href="{{ $syntax.RelPermalink }}" rel="stylesheet">
   {{ end }}
 
   {{ with .Params.style }}
-    {{ $extra := resources.Get . | minify }}
-    <link href="{{ $extra.RelPermalink }}" rel="stylesheet">
+  {{ $extra := resources.Get . | minify }}
+  <link href="{{ $extra.RelPermalink }}" rel="stylesheet">
   {{ end }}
 
   {{ with .OutputFormats.Get "rss" -}}
-  {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+  {{ printf `
+  <link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
   {{ end -}}
 
-   <!-- Tailwind CSS -->
-   <link rel="stylesheet" href="/css/tailwind.css">
+  <!-- Custom CSS -->
+  {{ with .Params.customCSS }}
+  {{ $customCSS := resources.Get . | minify }}
+  <link href="{{ $customCSS.RelPermalink }}" rel="stylesheet">
+  {{ end }}
+
+  <!-- Tailwind CSS -->
+  {{ $styles := resources.Get "css/tailwind.css" | postCSS (dict "configPath" "postcss.config.js") | minify |
+  fingerprint }}
+  <link rel="stylesheet" href="{{ $styles.Permalink }}" integrity="{{ $styles.Data.Integrity }}">
 
   <!-- A partial to be overwritten by the user.
   Simply place a custom_head.html into
@@ -38,7 +47,7 @@
   {{- partial "custom_head.html" . -}}
 </head>
 
-<body>
+<body class="{{ with .Params.body_class }}{{ . }}{{ else }}page-{{ .Section }}{{ end }}">
   <header>
     {{- partial "header.html" . -}}
   </header>
