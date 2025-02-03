@@ -3,20 +3,48 @@
   {{ if .Data.Singular }}
     <h3 class="blog-filter">{{ i18n "filtering-for" }} "{{ .Title }}"</h3>
   {{ end }}
-  <ul class="blog-posts">
-    {{ range .Pages }}
-    <li>
-      <span>
-        <i>
-          <time datetime='{{ .Date.Format "2006-01-02" }}' pubdate>
-            {{ .Date.Format (default "2006-01-02" .Site.Params.dateFormat) }}
-          </time>
-        </i>
+
+  {{/* 
+      Get all pages sorted by date in descending order.
+      This ensures the latest post comes first.
+  */}}
+  {{ $posts := .Pages.ByDate.Reverse }}
+
+  {{ if gt (len $posts) 0 }}
+    {{/* 
+        Showcase the latest (most recent) post in a featured section.
+        We pull the first item from the sorted pages.
+    */}}
+    {{ $latest := index $posts 0 }}
+    <h1>Latest Post</h1>
+    <article class="featured-post p-6 mb-8 bg-white rounded shadow">
+      <h2 class="text-3xl font-bold mb-2">
+        <a href="{{ $latest.RelPermalink }}" class="hover:underline">{{ $latest.Title }}</a>
+      </h2>
+      <time datetime="{{ $latest.Date.Format "2006-01-02" }}" pubdate class="block text-sm text-gray-600">
+        {{ $latest.Date.Format (default "2006-01-02" .Site.Params.dateFormat) }}
+      </time>
+      <p class="mt-4 text-gray-700">{{ $latest.Summary }}</p>
+    </article>
+  {{ end }}
+  <hr>
+  <ul class="blog-posts space-y-4">
+    {{/* 
+        Skip the latest post using Hugo's after function.
+        This will list the remaining posts.
+    */}}
+    {{ $others := after 1 $posts }}
+    {{ range $others }}
+    <li class="p-4 border rounded hover:bg-gray-100">
+      <span class="text-sm text-gray-500">
+        <time datetime="{{ .Date.Format "2006-01-02" }}" pubdate>
+          {{ .Date.Format (default "2006-01-02" .Site.Params.dateFormat) }}
+        </time>
       </span>
       {{ if .Params.link }}
-        <a href="{{ .Params.link }}" target="_blank">{{ .Title }} ↪</a>
+        <a href="{{ .Params.link }}" target="_blank" class="text-blue-500 hover:underline">{{ .Title }} ↪</a>
       {{ else }}
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <a href="{{ .RelPermalink }}" class="text-blue-500 hover:underline">{{ .Title }}</a>
       {{ end }}
     </li>
     {{ else }}
@@ -25,10 +53,11 @@
     </li>
     {{ end }}
   </ul>
+
   {{ if not .Data.Singular }}
-    <div>
+    <div class="mt-8">
       {{ range .Site.Taxonomies.tags }}
-        <a class="blog-tags" href="{{ .Page.RelPermalink }}">#{{ lower .Page.Title }}</a>
+        <a class="blog-tags inline-block bg-gray-200 hover:bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" href="{{ .Page.RelPermalink }}">#{{ lower .Page.Title }}</a>
       {{ end }}
     </div>
   {{ end }}
